@@ -63,3 +63,5 @@ npx hardhat test
 - Refacto tests to be more DRY
 - Deploy contract with `alchemy`
 - Create `reactjs` or `nexjs` frontend
+- Use code coverage tool and add more tests if needed
+  ...
