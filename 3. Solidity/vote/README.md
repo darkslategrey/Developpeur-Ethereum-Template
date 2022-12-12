@@ -18,7 +18,7 @@ yarn
 
 ## Notes
 
-Voters can vote on proposals with indexes starting a `1`
+Voters can vote on proposals with indexes starting at `1`
 
 ## Run tests
 
@@ -60,6 +60,6 @@ npx hardhat test
 
 ## TODO
 
-- Refacto tests to more DRY
+- Refacto tests to be more DRY
 - Deploy contract with `alchemy`
 - Create `reactjs` or `nexjs` frontend
