@@ -65,3 +65,7 @@ npx hardhat test
 - Create `reactjs` or `nexjs` frontend
 - Use code coverage tool and add more tests if needed
   ...
+
+## Notes
+
+Pas de mappings pour les whitelist
