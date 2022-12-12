@@ -57,6 +57,7 @@ contract Voting is Ownable {
     //
     uint winningProposalId;
 
+    // Use array
     mapping(address => Voter) whitelist;
 
     //
