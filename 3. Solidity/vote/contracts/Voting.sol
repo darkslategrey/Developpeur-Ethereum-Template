@@ -202,7 +202,7 @@ contract Voting is Ownable {
     }
 
     function getProposals()
-        public
+        external
         view
         onlyWhiteListed(msg.sender)
         returns (Proposal[] memory)
@@ -211,7 +211,7 @@ contract Voting is Ownable {
     }
 
     function getWinner()
-        public
+        external
         view
         onlyWhiteListed(msg.sender)
         atStatus(WorkflowStatus.VotesTallied)
@@ -220,7 +220,7 @@ contract Voting is Ownable {
         return proposals[winningProposalId - 1];
     }
 
-    function getStatus() public view returns (WorkflowStatus) {
+    function getStatus() external view returns (WorkflowStatus) {
         return status;
     }
 
