@@ -65,7 +65,7 @@ contract Voting is Ownable {
     //
     Proposal[] public proposals;
 
-    WorkflowStatus public status;
+    WorkflowStatus status;
 
     constructor() Ownable() {
         status = WorkflowStatus.RegisteringVoters;
@@ -220,7 +220,12 @@ contract Voting is Ownable {
         return proposals[winningProposalId - 1];
     }
 
-    function getStatus() external view returns (WorkflowStatus) {
+    function getStatus()
+        external
+        view
+        onlyWhiteListed(msg.sender)
+        returns (WorkflowStatus)
+    {
         return status;
     }
 

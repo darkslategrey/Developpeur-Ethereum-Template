@@ -56,7 +56,7 @@ describe("Voting", function () {
           WorkflowStatus.RegisteringVoters,
           WorkflowStatus.ProposalsRegistrationStarted
         );
-      expect(await voting.status()).to.eq(
+      expect(await voting.getStatus()).to.eq(
         WorkflowStatus.ProposalsRegistrationStarted
       );
     });
@@ -122,6 +122,15 @@ describe("Voting", function () {
       );
     });
 
+    it("CAN NOT see status", async function () {
+      const { voting, owner, account_1 } = await loadFixture(
+        deployVotingFixture
+      );
+      await expect(voting.connect(account_1).getStatus()).to.be.revertedWith(
+        "Voter not registered"
+      );
+    });
+
     it("Cannot see winner", async function () {
       const { voting, owner, account_1, account_2 } = await loadFixture(
         deployVotingFixture
@@ -140,6 +149,13 @@ describe("Voting", function () {
   });
 
   describe("With registered voter", function () {
+    it("CAN see status", async function () {
+      const { voting, owner } = await loadFixture(deployVotingFixture);
+      expect(await voting.getStatus()).to.be.eq(
+        WorkflowStatus.RegisteringVoters
+      );
+    });
+
     it("Cannot register voter", async function () {
       const { voting, owner, account_1, account_2 } = await loadFixture(
         deployVotingFixture
@@ -247,7 +263,7 @@ describe("Voting", function () {
   });
 
   describe("When VOTING session ENDED", function () {
-    it("Owner count votes", async function () {
+    before("Owner count votes", async function () {
       const { voting, owner, account_1, account_2, account_3 } =
         await loadFixture(deployVotingFixture);
 
@@ -265,6 +281,24 @@ describe("Voting", function () {
       await voting.connect(account_2).voteForProposal(1);
       await voting.connect(account_3).voteForProposal(2);
       await voting.endVotingSession();
+    });
+
+    it("Owner count votes", async function () {
+      const { voting, owner, account_1, account_2, account_3 } =
+        await loadFixture(deployVotingFixture);
+
+      await voting.addVoter(account_1.address);
+      await voting.addVoter(account_2.address);
+
+      await voting.startProposalsSession();
+      await voting.connect(account_1).registerProposal("prop 1");
+      await voting.connect(account_1).registerProposal("prop 2");
+      await voting.endProposalsSession();
+
+      await voting.startVotingSession();
+      await voting.connect(account_2).voteForProposal(1);
+      await voting.connect(account_1).voteForProposal(1);
+      await voting.endVotingSession();
 
       await expect(voting.countVotes())
         .to.emit(voting, "WorkflowStatusChange")
@@ -280,17 +314,15 @@ describe("Voting", function () {
 
       await voting.addVoter(account_1.address);
       await voting.addVoter(account_2.address);
-      await voting.addVoter(account_3.address);
 
       await voting.startProposalsSession();
       await voting.connect(account_1).registerProposal("prop 1");
-      await voting.connect(account_2).registerProposal("prop 2");
+      await voting.connect(account_1).registerProposal("prop 2");
       await voting.endProposalsSession();
 
       await voting.startVotingSession();
-      await voting.connect(account_1).voteForProposal(1);
       await voting.connect(account_2).voteForProposal(1);
-      await voting.connect(account_3).voteForProposal(2);
+      await voting.connect(account_1).voteForProposal(1);
       await voting.endVotingSession();
 
       await expect(voting.countVotes());
