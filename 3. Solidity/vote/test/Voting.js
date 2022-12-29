@@ -64,6 +64,8 @@ describe("Voting", function () {
     it("Cannot break the workflow", async function () {
       const { voting } = await loadFixture(deployVotingFixture);
 
+      expect(await voting.getStatus()).to.eq(WorkflowStatus.RegisteringVoters);
+
       await expect(voting.startVotingSession()).to.be.revertedWith(
         "Incorrect status"
       );
@@ -150,13 +152,17 @@ describe("Voting", function () {
 
   describe("With registered voter", function () {
     it("CAN see status", async function () {
-      const { voting, owner } = await loadFixture(deployVotingFixture);
-      expect(await voting.getStatus()).to.be.eq(
+      const { voting, owner, account_1 } = await loadFixture(
+        deployVotingFixture
+      );
+      await voting.addVoter(account_1.address);
+
+      expect(await voting.connect(account_1).getStatus()).to.be.eq(
         WorkflowStatus.RegisteringVoters
       );
     });
 
-    it("Cannot register voter", async function () {
+    it("CANNOT register voter", async function () {
       const { voting, owner, account_1, account_2 } = await loadFixture(
         deployVotingFixture
       );
@@ -205,8 +211,9 @@ describe("Voting", function () {
         ).to.be.revertedWith("Incorrect status");
       });
     });
+
     describe("When VOTING session STARTED", function () {
-      it("Cannot vote twice", async function () {
+      it("CANNOT vote twice", async function () {
         const { voting, owner, account_1 } = await loadFixture(
           deployVotingFixture
         );
