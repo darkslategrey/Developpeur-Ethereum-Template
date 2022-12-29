@@ -213,78 +213,54 @@ describe("Voting", function () {
     });
 
     describe("When VOTING session STARTED", function () {
-      it("CANNOT vote twice", async function () {
-        const { voting, owner, account_1 } = await loadFixture(
-          deployVotingFixture
-        );
+      let voting, account_1, account_2;
+
+      beforeEach(async () => {
+        const values = await loadFixture(deployVotingFixture);
+        voting = values.voting;
+        account_1 = values.account_1;
+        account_2 = values.account_2;
         await voting.addVoter(account_1.address);
+        await voting.addVoter(account_2.address);
         await voting.startProposalsSession();
         await voting.connect(account_1).registerProposal("prop 1");
+        await voting.connect(account_2).registerProposal("prop 2");
         await voting.endProposalsSession();
-
         await voting.startVotingSession();
+      });
+
+      it("CAN vote", async function () {
+        await expect(voting.connect(account_1).voteForProposal(1))
+          .to.emit(voting, "Voted")
+          .withArgs(account_1.address, 1);
+      });
+
+      it("CANNOT vote twice", async function () {
         await voting.connect(account_1).voteForProposal(1);
         await expect(
           voting.connect(account_1).voteForProposal(1)
         ).to.be.revertedWith("Allready voted");
       });
 
-      it("Can vote", async function () {
-        const { voting, owner, account_1 } = await loadFixture(
-          deployVotingFixture
-        );
-        await voting.addVoter(account_1.address);
-        await voting.startProposalsSession();
-        await voting.connect(account_1).registerProposal("prop 1");
-        await voting.endProposalsSession();
-        await voting.startVotingSession();
-
-        await expect(voting.connect(account_1).voteForProposal(1))
-          .to.emit(voting, "Voted")
-          .withArgs(account_1.address, 1);
-      });
-
-      it("See all proposals", async function () {
-        const { voting, owner, account_1, account_2 } = await loadFixture(
-          deployVotingFixture
-        );
-        await voting.addVoter(account_1.address);
-        await voting.addVoter(account_2.address);
-
-        await voting.startProposalsSession();
-        await voting.connect(account_1).registerProposal("prop 1");
-        await voting.connect(account_2).registerProposal("prop 2");
-
+      it("CAN see all proposals", async function () {
         const attendee =
           '[["prop 1",{"type":"BigNumber","hex":"0x00"}],["prop 2",{"type":"BigNumber","hex":"0x00"}]]';
         const proposals = await voting.connect(account_1).getProposals();
         expect(JSON.stringify(proposals)).to.eq(attendee);
       });
     });
-
-    describe("When VOTING session ENDED", function () {
-      it("Cannot vote", async function () {
-        const { voting, owner, account_1 } = await loadFixture(
-          deployVotingFixture
-        );
-        await voting.addVoter(account_1.address);
-        await voting.startProposalsSession();
-        await voting.connect(account_1).registerProposal("prop 1");
-        await voting.endProposalsSession();
-        await voting.startVotingSession();
-        await voting.endVotingSession();
-
-        await expect(
-          voting.connect(account_1).voteForProposal(1)
-        ).to.be.revertedWith("Incorrect status");
-      });
-    });
   });
 
   describe("When VOTING session ENDED", function () {
-    before("Owner count votes", async function () {
-      const { voting, owner, account_1, account_2, account_3 } =
-        await loadFixture(deployVotingFixture);
+    let voting, account_1, account_2, account_3;
+
+    beforeEach(async function () {
+      const values = await loadFixture(deployVotingFixture);
+
+      voting = values.voting;
+      account_1 = values.account_1;
+      account_2 = values.account_2;
+      account_3 = values.account_3;
 
       await voting.addVoter(account_1.address);
       await voting.addVoter(account_2.address);
@@ -302,23 +278,13 @@ describe("Voting", function () {
       await voting.endVotingSession();
     });
 
-    it("Owner count votes", async function () {
-      const { voting, owner, account_1, account_2, account_3 } =
-        await loadFixture(deployVotingFixture);
+    it("CANNOT vote", async function () {
+      await expect(
+        voting.connect(account_1).voteForProposal(1)
+      ).to.be.revertedWith("Incorrect status");
+    });
 
-      await voting.addVoter(account_1.address);
-      await voting.addVoter(account_2.address);
-
-      await voting.startProposalsSession();
-      await voting.connect(account_1).registerProposal("prop 1");
-      await voting.connect(account_1).registerProposal("prop 2");
-      await voting.endProposalsSession();
-
-      await voting.startVotingSession();
-      await voting.connect(account_2).voteForProposal(1);
-      await voting.connect(account_1).voteForProposal(1);
-      await voting.endVotingSession();
-
+    it("Owner CAN count votes", async function () {
       await expect(voting.countVotes())
         .to.emit(voting, "WorkflowStatusChange")
         .withArgs(
@@ -327,23 +293,7 @@ describe("Voting", function () {
         );
     });
 
-    it("Voters can check winner", async function () {
-      const { voting, owner, account_1, account_2, account_3 } =
-        await loadFixture(deployVotingFixture);
-
-      await voting.addVoter(account_1.address);
-      await voting.addVoter(account_2.address);
-
-      await voting.startProposalsSession();
-      await voting.connect(account_1).registerProposal("prop 1");
-      await voting.connect(account_1).registerProposal("prop 2");
-      await voting.endProposalsSession();
-
-      await voting.startVotingSession();
-      await voting.connect(account_2).voteForProposal(1);
-      await voting.connect(account_1).voteForProposal(1);
-      await voting.endVotingSession();
-
+    it("Voters CAN check winner", async function () {
       await expect(voting.countVotes());
 
       const winner = JSON.parse(
