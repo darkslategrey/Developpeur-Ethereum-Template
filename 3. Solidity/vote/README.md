@@ -12,8 +12,6 @@ https://formation.alyra.fr/products/developpeur-blockchain/categories/2149052575
 
 ```shell
 npm i
-# or
-yarn
 ```
 
 ## Notes
