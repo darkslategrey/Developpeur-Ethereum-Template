@@ -21,49 +21,75 @@ Voters can vote on proposals with indexes starting at `1`
 ## Run tests
 
 ```shell
-npx hardhat test
+npx hardhat coverage
+
+Version
+=======
+> solidity-coverage: v0.8.2
+
+Instrumenting for coverage...
+=============================
+
+> Voting.sol
+
+Compilation:
+============
+
+Compiled 3 Solidity files successfully
+
+Network Info
+============
+> HardhatEVM: v2.12.4
+> network:    hardhat
+
+
 
   Voting
     With owner
-      ✔ Check owner (666ms)
+      ✔ Check owner (232ms)
       ✔ Can add an address to whitelist
-      ✔ Cannot add address(0) to whitelist
+      ✔ Cannot add address(0) to whitelist (44ms)
       ✔ Start proposals registration
       ✔ Cannot break the workflow
     With unregistered voter
       ✔ Cannot register voter
-      ✔ Cannot register proposal
-      ✔ Cannot vote (39ms)
-      ✔ Cannot see proposals
-      ✔ Cannot see winner (38ms)
+      ✔ Cannot register proposal (40ms)
+      ✔ Cannot vote (73ms)
+      ✔ Cannot see proposals (44ms)
+      ✔ CAN NOT see status
+      ✔ Cannot see winner (70ms)
     With registered voter
-      ✔ Cannot register voter
+      ✔ CAN see status
+      ✔ CANNOT register voter
       When PROPOSALS registration session STARTED
-        ✔ Can register a proposal
+        ✔ CAN register a proposal
+        ✔ CANNOT register an empty proposal
       When PROPOSALS registration session ENDED
-        ✔ Cannot register a proposal
+        ✔ CANNOT register a proposal (42ms)
       When VOTING session STARTED
-        ✔ Cannot vote twice (42ms)
-        ✔ Can vote
-        ✔ See all proposals
-      When VOTING session ENDED
-        ✔ Cannot vote
+        ✔ CAN vote
+        ✔ CANNOT vote twice
+        ✔ CAN see all proposals
     When VOTING session ENDED
-      ✔ Owner count votes (70ms)
-      ✔ Voters can check winner (75ms)
+      ✔ CANNOT vote
+      ✔ Owner CAN count votes
+      ✔ Voters CAN check winner
 
 
-  19 passing (1s)
+  22 passing (1s)
+
+-------------|----------|----------|----------|----------|----------------|
+File         |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
+-------------|----------|----------|----------|----------|----------------|
+ contracts/  |      100 |    78.57 |      100 |      100 |                |
+  Voting.sol |      100 |    78.57 |      100 |      100 |                |
+-------------|----------|----------|----------|----------|----------------|
+All files    |      100 |    78.57 |      100 |      100 |                |
+-------------|----------|----------|----------|----------|----------------|
 ```
 
 ## TODO
 
-- Refacto tests to be more DRY
 - Deploy contract with `alchemy`
 - Create `reactjs` or `nexjs` frontend
-- Use code coverage tool and add more tests if needed
-  ...
-
-## Notes
-
-Pas de mappings pour les whitelist
+- ...
