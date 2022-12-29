@@ -44,6 +44,11 @@ contract Voting is Ownable {
         _;
     }
 
+    modifier notEmptyProposal(string memory _proposal) {
+        require(bytes(_proposal).length > 0, "Proposal cannot be empty");
+        _;
+    }
+
     //
     // EVENTS
     //
@@ -174,6 +179,7 @@ contract Voting is Ownable {
     )
         external
         onlyWhiteListed(msg.sender)
+        notEmptyProposal(_proposal)
         atStatus(WorkflowStatus.ProposalsRegistrationStarted)
     {
         proposals.push(Proposal(_proposal, 0));

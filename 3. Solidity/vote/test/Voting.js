@@ -167,20 +167,32 @@ describe("Voting", function () {
     });
 
     describe("When PROPOSALS registration session STARTED", function () {
-      it("Can register a proposal", async function () {
-        const { voting, owner, account_1, account_2 } = await loadFixture(
-          deployVotingFixture
-        );
+      let voting;
+      let account_1;
+
+      before(async () => {
+        const values = await loadFixture(deployVotingFixture);
+        voting = values.voting;
+        account_1 = values.account_1;
         await voting.addVoter(account_1.address);
         await voting.startProposalsSession();
+      });
 
+      it("CAN register a proposal", async function () {
         await expect(voting.connect(account_1).registerProposal("prop 1"))
           .to.emit(voting, "ProposalRegistered")
           .withArgs(1);
       });
+
+      it("CANNOT register an empty proposal", async function () {
+        await expect(
+          voting.connect(account_1).registerProposal("")
+        ).to.be.revertedWith("Proposal cannot be empty");
+      });
     });
+
     describe("When PROPOSALS registration session ENDED", async function () {
-      it("Cannot register a proposal", async function () {
+      it("CANNOT register a proposal", async function () {
         const { voting, owner, account_1, account_2 } = await loadFixture(
           deployVotingFixture
         );
