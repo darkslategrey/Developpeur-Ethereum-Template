@@ -93,3 +93,20 @@ All files    |      100 |    78.57 |      100 |      100 |                |
 - Deploy contract with `alchemy`
 - Create `reactjs` or `nexjs` frontend
 - ...
+
+## Erreur sur le cours
+
+https://formation.alyra.fr/products/developpeur-blockchain/categories/2149193173/posts/2153542390
+
+Deuxieme item de la liste
+
+Nous utilisons la fonction HttpProvider()
+
+par
+
+Nous creons une instance de Web 3:
+
+```javascript
+new Web3(rpcURL))
+new Web3(rpcURL)
+```

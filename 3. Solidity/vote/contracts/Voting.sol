@@ -4,6 +4,9 @@ pragma solidity =0.8.17;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 
+/// @title A voting app
+/// @author Gregory Faruch
+/// @notice It allow to add proposal, vote and get winner
 contract Voting is Ownable {
     //
     // STRUCTS
